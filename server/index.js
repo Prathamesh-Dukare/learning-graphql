@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const data = require("./data.json");
 
 const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@apollo/server/express4");
@@ -34,11 +35,9 @@ async function startServer() {
     `,
     resolvers: {
       Todo: {
-        user: async (todo) => {
-          let user = await fetch(
-            `https://jsonplaceholder.typicode.com/users/${todo.userId}`
-          );
-          return user.json();
+        user: (todo) => {
+          let user = data.users.find((user) => user.id === todo.userId);
+          return user;
         },
       },
 
@@ -52,10 +51,9 @@ async function startServer() {
             },
           ];
         },
-        getTodosFromServer: async () => {
-          let data = await fetch("https://jsonplaceholder.typicode.com/todos");
-          let todos = await data.json();
-          return todos;
+
+        getTodosFromServer: () => {
+          return data.todos;
         },
         getUsers: () => {
           return [];
